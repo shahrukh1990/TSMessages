@@ -12,7 +12,7 @@
 #import "TSMessage.h"
 
 
-#define TSMessageViewPadding 15.0
+#define TSMessageViewPadding 21.5
 
 #define TSDesignFileName @"TSMessagesDefaultDesign.json"
 
