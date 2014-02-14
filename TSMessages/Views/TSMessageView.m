@@ -96,6 +96,7 @@ static NSMutableDictionary *_notificationDesign;
      buttonCallback:(void (^)())buttonCallback
          atPosition:(TSMessageNotificationPosition)position
   shouldBeDismissed:(BOOL)dismissAble
+          textAlign:(NSTextAlignment)alignment
 {
     NSDictionary *notificationDesign = [TSMessageView notificationDesign];
     
@@ -107,6 +108,7 @@ static NSMutableDictionary *_notificationDesign;
         _duration = duration;
         _viewController = viewController;
         _messagePosition = position;
+        _messageAlignment = alignment;
         self.callback = callback;
         self.buttonCallback = buttonCallback;
         
@@ -191,6 +193,13 @@ static NSMutableDictionary *_notificationDesign;
                                                     [[current valueForKey:@"shadowOffsetY"] floatValue])];
         self.titleLabel.numberOfLines = 0;
         self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        // Check alignment: layout has priority!
+        int align = [[current valueForKey:@"textAlignment"] intValue];
+        if (align > 0)
+            self.titleLabel.textAlignment = align;
+        else
+            self.titleLabel.textAlignment = self.messageAlignment;
+        
         [self addSubview:self.titleLabel];
         
         // Set up content label (if set)
@@ -217,7 +226,12 @@ static NSMutableDictionary *_notificationDesign;
             [self.contentLabel setShadowOffset:self.titleLabel.shadowOffset];
             self.contentLabel.lineBreakMode = self.titleLabel.lineBreakMode;
             self.contentLabel.numberOfLines = 0;
-            
+            // Check alignment: layout has priority!
+            if (align > 0)
+                self.contentLabel.textAlignment = align;
+            else
+                self.contentLabel.textAlignment = self.messageAlignment;
+
             [self addSubview:self.contentLabel];
         }
         
@@ -347,6 +361,11 @@ static NSMutableDictionary *_notificationDesign;
                                        0.0);
     [self.titleLabel sizeToFit];
     
+    // for title text alignment
+    CGRect currFrame = self.titleLabel.frame;
+    
+    self.titleLabel.frame = CGRectMake(currFrame.origin.x, currFrame.origin.y, screenWidth - TSMessageViewPadding - self.iconImageView.frame.origin.x - self.iconImageView.frame.size.width - TSMessageViewPadding - self.textSpaceLeft - self.textSpaceRight, currFrame.size.height);
+    
     if ([self.subtitle length])
     {
         self.contentLabel.frame = CGRectMake(self.textSpaceLeft,
@@ -354,6 +373,11 @@ static NSMutableDictionary *_notificationDesign;
                                              screenWidth - TSMessageViewPadding - self.textSpaceLeft - self.textSpaceRight,
                                              0.0);
         [self.contentLabel sizeToFit];
+        
+        // for content text alignment
+        currFrame = self.contentLabel.frame;
+        
+        self.contentLabel.frame = CGRectMake(currFrame.origin.x, currFrame.origin.y, screenWidth - TSMessageViewPadding - self.iconImageView.frame.origin.x - self.iconImageView.frame.size.width - TSMessageViewPadding - self.textSpaceLeft - self.textSpaceRight, currFrame.size.height);
         
         currentHeight = self.contentLabel.frame.origin.y + self.contentLabel.frame.size.height;
     }
