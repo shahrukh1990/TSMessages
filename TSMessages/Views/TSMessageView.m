@@ -479,7 +479,7 @@ static NSMutableDictionary *_notificationDesign;
             BOOL isNavBarIsOpaque = !self.viewController.navigationController.navigationBar.isTranslucent && self.viewController.navigationController.navigationBar.alpha == 1;
 
             if (isNavBarIsHidden || isNavBarIsOpaque) {
-                topOffset = -30.f;
+                topOffset = -0.f;
             }
             backgroundFrame = UIEdgeInsetsInsetRect(backgroundFrame, UIEdgeInsetsMake(topOffset, 0.f, 0.f, 0.f));
         }
